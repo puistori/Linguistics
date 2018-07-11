@@ -744,6 +744,11 @@ class the_main_window(QMainWindow):
         new_featureset_editor.setShortcut("Ctrl+E")
         new_featureset_editor.triggered.connect(self.show_edit_featureset)
 
+        # edit groups
+        new_group_edit = QAction('&Edit a Phoneme Group',self)
+        new_group_edit.setStatusTip('Edit several phonemes at once')
+        new_group_edit.triggered.connect(self.show_group_edit)
+
         # Data_transfer
 
         new_data_transfer = QAction('&Transfer Data',self)
@@ -772,6 +777,7 @@ class the_main_window(QMainWindow):
         file_menu.addAction(new_window)
         file_menu.addAction(new_feature_set)
         file_menu.addAction(new_featureset_editor)
+        file_menu.addAction(new_group_edit)
         file_menu.addAction(new_data_transfer)
         file_menu.addAction(datapack_management)
         file_menu.addAction(Save_all)
@@ -838,6 +844,8 @@ class the_main_window(QMainWindow):
 
     def show_datapack_management(self):
         self.datapack_management = data_pack_management()
+    def show_group_edit(self):
+        self.group_edit = alter_group_of_phonemes_opening_page()
 class executive_window(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -4900,12 +4908,16 @@ class alter_goup_of_phonemes(QtWidgets.QWidget):
             return None
         else:
             print("The function didn't stop")
-
+            print(attribute_map)
             ## this kind of corrects stuff so it all runs smoother
 
-            for key in self.value_map:
-                if self.value_map[key] == "To Null":
-                    self.value_map[key] = "Null"
+            for key in attribute_map:
+                if attribute_map[key] == "To Null":
+                    attribute_map[key] = None
+                elif attribute_map[key] == "True":
+                    attribute_map[key] = True
+                elif attribute_map[key]== "False":
+                    attribute_map[key] = False
 
 
 
@@ -4929,10 +4941,15 @@ class alter_goup_of_phonemes(QtWidgets.QWidget):
         remakes =[]
         print("these were phoenems to be remade: %s"%to_be_remade_phonemes)
         for phoneme_to_be_changed in to_be_remade_phonemes:
+            print (phoneme_to_be_changed)
             remake = []
             for attribute in phoneme_to_be_changed:
+                print(attribute)
                 if attribute[0] in attribute_map:
+                    print(attribute)
+                    print(attribute_map)
                     new_attr = (attribute[0],attribute_map[attribute[0]])
+                    print(new_attr)
                     remake.append(new_attr)
                 else:
                     remake.append(attribute)
@@ -4947,6 +4964,7 @@ class alter_goup_of_phonemes(QtWidgets.QWidget):
         reset_phoneme_map()
         inventory_update.set_off()
         hey_man = QMessageBox.warning(self,"Changes Saved","You have successfully altered the phonemes",QMessageBox.Ok)
+        print("this is the resulting dictionish")
         print(dictionish[self.chosenInventory])
         self.parent.close()
         self.close()
